@@ -1,0 +1,155 @@
+{
+  "colors": {
+    "status": {
+      "confirmed": [
+        "浅蓝主背景",
+        "白色内容表面",
+        "深蓝信息层级",
+        "淡黄色重点高亮"
+      ],
+      "inferred": "所有 HEX 均为参考图视觉采样后的近似值，需在正式设计稿中微调。"
+    },
+    "background": "#A9D2E8",
+    "backgroundSoft": "#C7E4F2",
+    "surface": "#FAFAF7",
+    "surfaceMuted": "#EEF1F2",
+    "surfaceHighlight": "#FFF5B5",
+    "primary": "#163B5C",
+    "primaryDark": "#274B68",
+    "secondary": "#3F6D8D",
+    "textMuted": "#71879F",
+    "neutral": "#AEB5C2",
+    "highlight": "#FFE98A",
+    "border": "#C7E4F2",
+    "borderStrong": "#71879F",
+    "chartPalette": [
+      "#163B5C",
+      "#3F6D8D",
+      "#6F9FBC",
+      "#A9D2E8",
+      "#C7E4F2",
+      "#AEB5C2",
+      "#FFF5B5",
+      "#FFE98A"
+    ]
+  },
+  "typography": {
+    "fontSans": [
+      "Inter",
+      "Noto Sans SC",
+      "PingFang SC",
+      "Microsoft YaHei",
+      "sans-serif"
+    ],
+    "fontSerif": [
+      "Noto Serif SC",
+      "Songti SC",
+      "serif"
+    ],
+    "fontMono": [
+      "IBM Plex Mono",
+      "SFMono-Regular",
+      "Consolas",
+      "monospace"
+    ],
+    "hero": {
+      "size": "clamp(42px, 8vw, 96px)",
+      "weight": 700,
+      "lineHeight": 1.05,
+      "letterSpacing": "-0.03em"
+    },
+    "h1": {
+      "size": "clamp(34px, 5vw, 64px)",
+      "weight": 700,
+      "lineHeight": 1.12,
+      "letterSpacing": "-0.02em"
+    },
+    "h2": {
+      "size": "clamp(28px, 4vw, 36px)",
+      "weight": 600,
+      "lineHeight": 1.25
+    },
+    "body": {
+      "desktopSize": "18px",
+      "mobileSize": "16px",
+      "weight": 400,
+      "lineHeight": 1.8,
+      "letterSpacing": "0.01em"
+    },
+    "chartLabel": {
+      "size": "12px-14px",
+      "weight": 500,
+      "lineHeight": 1.35
+    }
+  },
+  "layout": {
+    "contentMaxWidth": "1440px",
+    "articleMaxWidth": "680px",
+    "articleComfortableWidth": "620px",
+    "chartMaxWidth": "980px",
+    "timelineMaxWidth": "1200px",
+    "desktopGutter": "64px-96px",
+    "mobileGutter": "20px-24px",
+    "paragraphGap": "20px-28px",
+    "chartSpacingBefore": "48px-64px",
+    "chartSpacingAfter": "32px-48px",
+    "sectionSpacing": "120px-180px",
+    "mobileStrategy": "单列正文、图表全宽、无常驻侧栏、时间线纵向排列"
+  },
+  "effects": {
+    "principle": "动效只服务阅读与数据理解，不作为装饰。",
+    "paragraph": {
+      "animation": "opacity 0 to 1, translateY(12px) to 0",
+      "duration": "240ms",
+      "trigger": "进入视口约15%"
+    },
+    "sectionHeading": {
+      "animation": "opacity 0 to 1, translateY(24px) to 0",
+      "duration": "360ms",
+      "trigger": "章节进入视口"
+    },
+    "chart": {
+      "duration": "500ms-800ms",
+      "trigger": "首次进入视口",
+      "repeat": false
+    },
+    "number": {
+      "duration": "700ms-1000ms",
+      "trigger": "首次进入视口",
+      "repeat": false
+    },
+    "hover": {
+      "button": "颜色变化",
+      "card": "上移2px并略增阴影",
+      "chart": "显示数值、单位和来源"
+    },
+    "easing": "cubic-bezier(0.2, 0.8, 0.2, 1)",
+    "reducedMotion": {
+      "disable": [
+        "数字滚动",
+        "图表绘制",
+        "段落位移",
+        "sticky图表"
+      ],
+      "retain": [
+        "100ms以内按钮颜色反馈"
+      ]
+    }
+  },
+  "cssVariables": {
+    "colorBackground": "--color-background: #A9D2E8",
+    "colorSurface": "--color-surface: #FAFAF7",
+    "colorPrimary": "--color-primary: #163B5C",
+    "colorHighlight": "--color-highlight: #FFE98A",
+    "fontSans": "--font-sans: Inter, Noto Sans SC, PingFang SC, Microsoft YaHei, sans-serif",
+    "articleMax": "--article-max: 680px",
+    "chartMax": "--chart-max: 980px",
+    "paragraphGap": "--paragraph-gap: 24px",
+    "sectionGap": "--section-gap: clamp(120px, 14vw, 180px)",
+    "radiusCard": "--radius-lg: 24px",
+    "shadowCard": "--shadow-card: 0 18px 42px rgba(22, 59, 92, 0.12)",
+    "durationBase": "--duration-base: 240ms",
+    "durationChart": "--duration-chart: 650ms",
+    "ease": "--ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1)"
+  }
+}

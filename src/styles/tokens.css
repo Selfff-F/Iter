@@ -1,0 +1,93 @@
+:root {
+  /* Colors */
+  --color-background: #A9D2E8;
+  --color-background-soft: #C7E4F2;
+  --color-surface: #FAFAF7;
+  --color-surface-muted: #EEF1F2;
+  --color-surface-highlight: #FFF5B5;
+
+  --color-primary: #163B5C;
+  --color-primary-dark: #274B68;
+  --color-secondary: #3F6D8D;
+  --color-text-muted: #71879F;
+  --color-neutral: #AEB5C2;
+  --color-highlight: #FFE98A;
+
+  --color-border: #C7E4F2;
+  --color-border-strong: #71879F;
+  --color-text-primary: #163B5C;
+  --color-text-secondary: #274B68;
+  --color-text-on-primary: #FAFAF7;
+
+  /* Chart */
+  --chart-1: #163B5C;
+  --chart-2: #3F6D8D;
+  --chart-3: #6F9FBC;
+  --chart-4: #A9D2E8;
+  --chart-5: #C7E4F2;
+  --chart-6: #AEB5C2;
+  --chart-7: #FFF5B5;
+  --chart-8: #FFE98A;
+
+  /* Typography */
+  --font-sans: "Inter", "Noto Sans SC", "PingFang SC",
+    "Microsoft YaHei", sans-serif;
+  --font-serif: "Noto Serif SC", "Songti SC", serif;
+  --font-mono: "IBM Plex Mono", "SFMono-Regular",
+    Consolas, monospace;
+
+  --text-body: 18px;
+  --text-body-mobile: 16px;
+  --text-caption: 12px;
+  --text-chart-title: 20px;
+  --text-h2: clamp(28px, 4vw, 36px);
+  --text-h1: clamp(34px, 5vw, 64px);
+  --text-hero: clamp(42px, 8vw, 96px);
+
+  --leading-body: 1.8;
+  --leading-heading: 1.12;
+  --tracking-label: 0.08em;
+
+  /* Layout */
+  --content-max: 1440px;
+  --article-max: 680px;
+  --article-comfortable: 620px;
+  --chart-max: 980px;
+  --timeline-max: 1200px;
+  --page-gutter: clamp(20px, 6vw, 96px);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 144px;
+  --space-11: 180px;
+
+  --paragraph-gap: 24px;
+  --chart-before: 64px;
+  --chart-after: 40px;
+  --section-gap: clamp(120px, 14vw, 180px);
+
+  /* Radius and shadow */
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 10px 28px rgba(22, 59, 92, 0.08);
+  --shadow-card: 0 18px 42px rgba(22, 59, 92, 0.12);
+
+  /* Effects */
+  --duration-fast: 180ms;
+  --duration-base: 240ms;
+  --duration-section: 360ms;
+  --duration-chart: 650ms;
+  --ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
