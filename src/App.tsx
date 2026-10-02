@@ -56,11 +56,16 @@ export default function App() {
 
       <main>
         <section className="hero" aria-labelledby="site-title">
-          <div className="hero__content">
-            <p className="eyebrow">数据新闻 · 老龄化与陪诊服务</p>
-            <h1 id="site-title">{article.title}</h1>
-            <p className="hero__summary">一位 65 岁老人独自就医，用整整五小时走完一次看诊。</p>
-            <a className="button button--primary" href="#introduction">开始阅读 <span aria-hidden="true">↓</span></a>
+          <div className="hero__layout">
+            <div className="hero__content">
+              <p className="hero__eyebrow eyebrow">数据新闻 · 老龄化与陪诊服务</p>
+              <h1 id="site-title">{article.title}</h1>
+              <p className="hero__summary">一位 65 岁老人独自就医，用整整五小时走完一次看诊。</p>
+              <a className="button button--primary hero__action" href="#introduction">开始阅读 <span aria-hidden="true">↓</span></a>
+            </div>
+            <div className="hero__media" aria-hidden="true">
+              <img src="/images/cover.png" alt="" />
+            </div>
           </div>
           <div className="hero__facts" aria-label="核心数据">
             <div><strong>5小时</strong><span>一次就医耗时</span></div>

@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import type { ArticleSection } from "../content/article";
+import { getChartLayout, type ArticleSection, type ChartId } from "../content/article";
 import { CoreCharts } from "./CoreCharts";
 import { SecondaryCharts } from "./SecondaryCharts";
 import { RevealGroup } from "./RevealGroup";
@@ -13,12 +13,25 @@ export function ArticleContent({ section }: ArticleContentProps) {
   let paragraphs: ReactNode[] = [];
   let groupIndex = 0;
 
+  const createParagraphGroups = (items: ReactNode[]) => {
+    const groups: ReactNode[] = [];
+    for (let index = 0; index < items.length; index += 3) {
+      groups.push(<RevealGroup key={`${section.id}-group-${groupIndex++}`}>{items.slice(index, index + 3)}</RevealGroup>);
+    }
+    return groups;
+  };
+
   const flushParagraphs = () => {
     if (!paragraphs.length) return;
-    for (let index = 0; index < paragraphs.length; index += 3) {
-      renderedBlocks.push(<RevealGroup key={`${section.id}-group-${groupIndex++}`}>{paragraphs.slice(index, index + 3)}</RevealGroup>);
-    }
+    renderedBlocks.push(...createParagraphGroups(paragraphs));
     paragraphs = [];
+  };
+
+  const renderChart = (chartId: ChartId) => {
+    if (chartId === "01" || chartId === "02") {
+      return <CoreCharts key={`${section.id}-chart-${chartId}`} chartId={chartId} />;
+    }
+    return <SecondaryCharts key={`${section.id}-chart-${chartId}`} chartId={chartId} />;
   };
 
   section.blocks.forEach((block, index) => {
@@ -26,15 +39,20 @@ export function ArticleContent({ section }: ArticleContentProps) {
       paragraphs.push(<p key={`${section.id}-paragraph-${index}`}>{block.content}</p>);
       return;
     }
+    const chart = renderChart(block.chartId);
+    if (getChartLayout(block.chartId) === "split" && paragraphs.length) {
+      const copy = createParagraphGroups(paragraphs);
+      paragraphs = [];
+      renderedBlocks.push(
+        <div className="article-split" key={`${section.id}-split-${block.chartId}`}>
+          <div className="article-split__copy">{copy}</div>
+          <div className="article-split__chart">{chart}</div>
+        </div>,
+      );
+      return;
+    }
     flushParagraphs();
-    if (block.chartId === "01" || block.chartId === "02") {
-      renderedBlocks.push(<CoreCharts key={`${section.id}-chart-${block.chartId}`} chartId={block.chartId} />);
-      return;
-    }
-    if (block.chartId === "03" || block.chartId === "04" || block.chartId === "05") {
-      renderedBlocks.push(<SecondaryCharts key={`${section.id}-chart-${block.chartId}`} chartId={block.chartId} />);
-      return;
-    }
+    renderedBlocks.push(chart);
   });
   flushParagraphs();
 

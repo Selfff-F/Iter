@@ -53,6 +53,7 @@
   --article-max: 680px;
   --article-comfortable: 620px;
   --chart-max: 980px;
+  --split-max: 1200px;
   --timeline-max: 1200px;
   --page-gutter: clamp(20px, 6vw, 96px);
 

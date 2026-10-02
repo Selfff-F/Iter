@@ -1,6 +1,8 @@
 import articleSource from "../../docs/article.md?raw";
+import contentSource from "../../docs/content.md?raw";
 
 export type ChartId = "01" | "02" | "03" | "04" | "05";
+export type ChartLayout = "full" | "split";
 
 export type ArticleBlock =
   | { type: "paragraph"; content: string }
@@ -75,6 +77,34 @@ export function parseArticle(source: string): { title: string; sections: Article
 }
 
 export const article = parseArticle(articleSource);
+
+function parseChartLayouts(source: string): Partial<Record<ChartId, ChartLayout>> {
+  const lines = source.replace(/\r/g, "").split("\n");
+  const headerIndex = lines.findIndex((line) => line.includes("| 编号 ") && line.includes("| 布局 "));
+  if (headerIndex < 0) return {};
+
+  const headerCells = lines[headerIndex].split("|").map((cell) => cell.trim());
+  const chartIndex = headerCells.indexOf("编号");
+  const layoutIndex = headerCells.indexOf("布局");
+  if (chartIndex < 0 || layoutIndex < 0) return {};
+
+  const layouts: Partial<Record<ChartId, ChartLayout>> = {};
+  for (const line of lines.slice(headerIndex + 2)) {
+    if (!line.trim().startsWith("|")) break;
+    const cells = line.split("|").map((cell) => cell.trim());
+    const chartMatch = cells[chartIndex]?.match(/^图表\s*(0[1-5])$/);
+    if (!chartMatch) continue;
+    layouts[chartMatch[1] as ChartId] = cells[layoutIndex] === "split" ? "split" : "full";
+  }
+
+  return layouts;
+}
+
+export const chartLayouts = parseChartLayouts(contentSource);
+
+export function getChartLayout(chartId: ChartId): ChartLayout {
+  return chartLayouts[chartId] ?? "full";
+}
 
 export const chartMetadata: Record<ChartId, { title: string; conclusion: string }> = {
   "01": { title: "2016—2025年65岁及以上人口数量及占比", conclusion: "老年人口规模和占比持续增长，2025年占比达到15.9%。" },
