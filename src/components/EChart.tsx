@@ -1,15 +1,16 @@
 import { useEffect, useRef } from "react";
 import * as echarts from "echarts";
-import type { EChartsOption } from "echarts";
+import type { EChartsOption, EChartsType } from "echarts";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { useOnceInView } from "../hooks/useMotion";
 
 interface EChartProps {
   option: EChartsOption;
   ariaLabel: string;
+  onChartReady?: (chart: EChartsType) => void | (() => void);
 }
 
-export function EChart({ option, ariaLabel }: EChartProps) {
+export function EChart({ option, ariaLabel, onChartReady }: EChartProps) {
   const chartRef = useRef<echarts.ECharts | null>(null);
   const hasAnimatedRef = useRef(false);
   const { ref: containerRef, visible, reducedMotion } = useOnceInView<HTMLDivElement>();
@@ -23,14 +24,16 @@ export function EChart({ option, ariaLabel }: EChartProps) {
     hasAnimatedRef.current = false;
     chart.setOption({ ...option, animation: false }, { notMerge: true });
     chart.setOption({ tooltip: { triggerOn: isMobile ? "click" : "mousemove|click" } });
+    const cleanupInteractions = onChartReady?.(chart);
     const resizeObserver = new ResizeObserver(() => chart.resize());
     resizeObserver.observe(container);
     return () => {
+      cleanupInteractions?.();
       resizeObserver.disconnect();
       chart.dispose();
       chartRef.current = null;
     };
-  }, [isMobile, option]);
+  }, [isMobile, onChartReady, option]);
 
   useEffect(() => {
     const chart = chartRef.current;

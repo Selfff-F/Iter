@@ -5,6 +5,8 @@
   --color-surface: #FAFAF7;
   --color-surface-muted: #EEF1F2;
   --color-surface-highlight: #FFF5B5;
+  --color-accent-yellow: var(--color-surface-highlight);
+  --color-accent-blue: var(--color-background-soft);
 
   --color-primary: #163B5C;
   --color-primary-dark: #274B68;
@@ -53,7 +55,7 @@
   --article-max: 680px;
   --article-comfortable: 620px;
   --chart-max: 980px;
-  --split-max: 1200px;
+  --split-max: 1280px;
   --timeline-max: 1200px;
   --page-gutter: clamp(20px, 6vw, 96px);
 

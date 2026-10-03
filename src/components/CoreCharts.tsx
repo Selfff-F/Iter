@@ -28,8 +28,8 @@ function populationOption(data: PopulationRow[]): EChartsOption {
     grid: { top: 36, right: 28, bottom: 54, left: 42, containLabel: true },
     xAxis: { type: "category", data: data.map((row) => row.year), axisLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
     yAxis: [
-      { type: "value", name: "人口规模", nameTextStyle: { color: color.text }, splitLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
-      { type: "value", name: "占比", min: 0, max: 20, nameTextStyle: { color: color.text }, splitLine: { show: false }, axisLabel: { color: color.text } },
+      { type: "value", name: "万人", nameTextStyle: { color: color.text }, splitLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
+      { type: "value", name: "%", min: 0, max: 20, nameTextStyle: { color: color.text }, splitLine: { show: false }, axisLabel: { color: color.text } },
     ],
     series: [
       { name: "65岁及以上人口", type: "line", smooth: true, symbolSize: 7, data: data.map((row) => row.elderlyPopulation), lineStyle: { width: 3 } },
@@ -47,8 +47,8 @@ function emptyNestOption(data: EmptyNestRow[]): EChartsOption {
     grid: { top: 36, right: 28, bottom: 54, left: 42, containLabel: true },
     xAxis: { type: "category", data: data.map((row) => row.year), axisLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
     yAxis: [
-      { type: "value", name: "家庭数量", nameTextStyle: { color: color.text }, splitLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
-      { type: "value", name: "空巢占比", min: 0, max: 50, nameTextStyle: { color: color.text }, splitLine: { show: false }, axisLabel: { color: color.text } },
+      { type: "value", name: "万户", nameTextStyle: { color: color.text }, splitLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
+      { type: "value", name: "%", min: 0, max: 50, nameTextStyle: { color: color.text }, splitLine: { show: false }, axisLabel: { color: color.text } },
     ],
     series: [
       { name: "夫妻空巢家庭", type: "bar", data: data.map((row) => row.couple), itemStyle: { borderRadius: [6, 6, 0, 0] } },
@@ -75,12 +75,11 @@ export function CoreCharts({ chartId }: { chartId: "01" | "02" }) {
     return chartId === "01" ? populationOption(data["01"]) : emptyNestOption(data["02"]);
   }, [chartId, data]);
 
-  const file = chartId === "01" ? "elderly_population_2016_2025.csv" : "empty_nest_households_2000_2020.csv";
-  if (error) return <ChartFrame chartId={chartId} dataFile={file}><p className="chart-message">{error}</p></ChartFrame>;
-  if (!option) return <ChartFrame chartId={chartId} dataFile={file}><p className="chart-message">正在加载数据…</p></ChartFrame>;
+  if (error) return <ChartFrame chartId={chartId}><p className="chart-message">{error}</p></ChartFrame>;
+  if (!option) return <ChartFrame chartId={chartId}><p className="chart-message">正在加载数据…</p></ChartFrame>;
 
   return (
-    <ChartFrame chartId={chartId} dataFile={file}>
+    <ChartFrame chartId={chartId}>
       <EChart option={option} ariaLabel={chartId === "01" ? "2016年至2025年65岁及以上人口数量及占比图" : "2000年至2020年空巢老年家庭变化图"} />
     </ChartFrame>
   );

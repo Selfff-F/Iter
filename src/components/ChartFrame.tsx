@@ -4,11 +4,10 @@ import { useOnceInView } from "../hooks/useMotion";
 
 interface ChartFrameProps {
   chartId: ChartId;
-  dataFile: string;
   children: ReactNode;
 }
 
-export function ChartFrame({ chartId, dataFile, children }: ChartFrameProps) {
+export function ChartFrame({ chartId, children }: ChartFrameProps) {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const { ref, visible } = useOnceInView<HTMLElement>();
   const metadata = chartMetadata[chartId];
@@ -23,7 +22,7 @@ export function ChartFrame({ chartId, dataFile, children }: ChartFrameProps) {
       <figcaption id={`chart-${chartId}-caption`} className="chart-frame__caption">
         <strong>{metadata.title}</strong>
         <span>{metadata.conclusion}</span>
-        <small>数据来源：待补　单位：待补　统计口径：待补</small>
+        <small>数据来源：{metadata.source}　单位：{metadata.unit}</small>
       </figcaption>
 
       {drawerOpen && (
@@ -37,10 +36,9 @@ export function ChartFrame({ chartId, dataFile, children }: ChartFrameProps) {
             <h3 id={`drawer-${chartId}-title`}>{metadata.title}</h3>
             <p>{metadata.conclusion}</p>
             <dl>
-              <div><dt>数据文件</dt><dd>{dataFile}</dd></div>
-              <div><dt>数据来源</dt><dd>待补</dd></div>
-              <div><dt>单位</dt><dd>待补</dd></div>
-              <div><dt>统计口径</dt><dd>待补</dd></div>
+              <div><dt>数据文件</dt><dd>{metadata.dataFile}</dd></div>
+              <div><dt>数据来源</dt><dd>{metadata.source}</dd></div>
+              <div><dt>单位</dt><dd>{metadata.unit}</dd></div>
             </dl>
           </aside>
         </div>

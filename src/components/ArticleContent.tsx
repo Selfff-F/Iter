@@ -1,62 +1,45 @@
-import type { ReactNode } from "react";
-import { getChartLayout, type ArticleSection, type ChartId } from "../content/article";
+import type { ChartId } from "../content/article";
+import type { StoryScreenData } from "../content/storyScreens";
+import { ChartFrame } from "./ChartFrame";
 import { CoreCharts } from "./CoreCharts";
-import { SecondaryCharts } from "./SecondaryCharts";
-import { RevealGroup } from "./RevealGroup";
+import { PlatformCarousel } from "./PlatformCarousel";
+import { SecondaryCharts, type ImplementedChartId } from "./SecondaryCharts";
 
-interface ArticleContentProps {
-  section: ArticleSection;
-}
-
-export function ArticleContent({ section }: ArticleContentProps) {
-  const renderedBlocks: ReactNode[] = [];
-  let paragraphs: ReactNode[] = [];
-  let groupIndex = 0;
-
-  const createParagraphGroups = (items: ReactNode[]) => {
-    const groups: ReactNode[] = [];
-    for (let index = 0; index < items.length; index += 3) {
-      groups.push(<RevealGroup key={`${section.id}-group-${groupIndex++}`}>{items.slice(index, index + 3)}</RevealGroup>);
-    }
-    return groups;
-  };
-
-  const flushParagraphs = () => {
-    if (!paragraphs.length) return;
-    renderedBlocks.push(...createParagraphGroups(paragraphs));
-    paragraphs = [];
-  };
-
+export function ArticleContent({ screen }: { screen: StoryScreenData }) {
   const renderChart = (chartId: ChartId) => {
     if (chartId === "01" || chartId === "02") {
-      return <CoreCharts key={`${section.id}-chart-${chartId}`} chartId={chartId} />;
+      return <CoreCharts key={`${screen.id}-chart-${chartId}`} chartId={chartId} />;
     }
-    return <SecondaryCharts key={`${section.id}-chart-${chartId}`} chartId={chartId} />;
+    if (["03", "04", "05", "06", "07", "08", "09", "10", "11"].includes(chartId)) {
+      return <SecondaryCharts key={`${screen.id}-chart-${chartId}`} chartId={chartId as ImplementedChartId} />;
+    }
+    return (
+      <ChartFrame key={`${screen.id}-chart-${chartId}`} chartId={chartId}>
+        <p className="chart-message">本图表将在下一轮实现</p>
+      </ChartFrame>
+    );
   };
 
-  section.blocks.forEach((block, index) => {
-    if (block.type === "paragraph") {
-      paragraphs.push(<p key={`${section.id}-paragraph-${index}`}>{block.content}</p>);
-      return;
-    }
-    const chart = renderChart(block.chartId);
-    if (getChartLayout(block.chartId) === "split" && paragraphs.length) {
-      const copy = createParagraphGroups(paragraphs);
-      paragraphs = [];
-      renderedBlocks.push(
-        <div className="article-split" key={`${section.id}-split-${block.chartId}`}>
-          <div className="article-split__copy">{copy}</div>
-          <div className="article-split__chart">{chart}</div>
-        </div>,
-      );
-      return;
-    }
-    flushParagraphs();
-    renderedBlocks.push(chart);
-  });
-  flushParagraphs();
+  const hasCharts = screen.chartIds.length > 0;
+  const bodyClass = screen.carouselId
+    ? "story-screen__body story-screen__body--carousel"
+    : hasCharts
+      ? `story-screen__body story-screen__body--${screen.chartIds.length > 1 ? "multi-chart" : "single-chart"}`
+      : "story-screen__body story-screen__body--text-only";
 
   return (
-    <div className="article-content">{renderedBlocks}</div>
+    <div className={bodyClass}>
+      {screen.paragraphs.length > 0 && (
+        <div className="story-screen__copy">
+          {screen.paragraphs.map((paragraph, index) => <p key={`${screen.id}-paragraph-${index}`}>{paragraph}</p>)}
+        </div>
+      )}
+      {screen.carouselId === "platforms" && <PlatformCarousel />}
+      {hasCharts && (
+        <div className="story-screen__visuals">
+          {screen.chartIds.map(renderChart)}
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 [
-  { "step": 1, "title": "挂号", "description": "协助挂号", "icon": "" },
-  { "step": 2, "title": "问诊", "description": "陪同问诊", "icon": "" },
-  { "step": 3, "title": "检查", "description": "协助检查", "icon": "" }
+  { "step": 1, "title": "预约服务", "description": "线上/线下预约，确认时间地点", "icon": "" },
+  { "step": 2, "title": "接诊引导", "description": "准时到达，核对信息，引导就诊", "icon": "" },
+  { "step": 3, "title": "全程陪诊", "description": "协助挂号、检查、取药，沟通病情", "icon": "" },
+  { "step": 4, "title": "服务结束", "description": "确认需求完成，反馈服务评价", "icon": "" }
 ]

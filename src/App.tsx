@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { ArticleContent } from "./components/ArticleContent";
 import { ReadingProgress } from "./components/ReadingProgress";
-import { SectionHeading } from "./components/SectionHeading";
 import { SiteNav } from "./components/SiteNav";
+import { StoryScreen } from "./components/StoryScreen";
 import { article } from "./content/article";
+import { storyScreensBySection } from "./content/storyScreens";
+import { useScreenTransitions } from "./hooks/useScreenTransitions";
 import "./styles/app.css";
 
 export default function App() {
@@ -11,6 +12,7 @@ export default function App() {
   const [progress, setProgress] = useState(0);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showBackToTop, setShowBackToTop] = useState(false);
+  useScreenTransitions();
 
   useEffect(() => {
     const updateScrollState = () => {
@@ -28,14 +30,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const sectionElements = article.sections
-      .map((section) => document.getElementById(section.id))
-      .filter((element): element is HTMLElement => element !== null);
+    const sectionElements = Array.from(document.querySelectorAll<HTMLElement>(".story-screen[data-section-id]"));
     const observer = new IntersectionObserver((entries) => {
       const visible = entries
         .filter((entry) => entry.isIntersecting)
         .sort((first, second) => second.intersectionRatio - first.intersectionRatio)[0];
-      if (visible) setActiveId(visible.target.id);
+      if (visible) setActiveId((visible.target as HTMLElement).dataset.sectionId ?? "introduction");
     }, { rootMargin: "-28% 0px -58% 0px", threshold: [0, 0.1, 0.5] });
     sectionElements.forEach((element) => observer.observe(element));
     return () => observer.disconnect();
@@ -56,31 +56,39 @@ export default function App() {
 
       <main>
         <section className="hero" aria-labelledby="site-title">
-          <div className="hero__layout">
-            <div className="hero__content">
-              <p className="hero__eyebrow eyebrow">数据新闻 · 老龄化与陪诊服务</p>
-              <h1 id="site-title">{article.title}</h1>
-              <p className="hero__summary">一位 65 岁老人独自就医，用整整五小时走完一次看诊。</p>
-              <a className="button button--primary hero__action" href="#introduction">开始阅读 <span aria-hidden="true">↓</span></a>
-            </div>
-            <div className="hero__media" aria-hidden="true">
-              <img src="/images/cover.png" alt="" />
-            </div>
+          <div className="hero__visual" aria-hidden="true">
+            <img className="hero__background" src="/images/hero.png" alt="" />
           </div>
-          <div className="hero__facts" aria-label="核心数据">
-            <div><strong>5小时</strong><span>一次就医耗时</span></div>
-            <div><strong>15.9%</strong><span>老年人口占比</span></div>
-            <div><strong>达到四成</strong><span>空巢老年家庭</span></div>
+          <div className="hero__overlay" aria-hidden="true" />
+          <div className="hero__bottom-fade" aria-hidden="true" />
+          <div className="hero__content">
+            <h1 id="site-title">{article.title}</h1>
+            <p className="hero__summary">一位 65 岁老人独自就医，用整整五小时走完一次看诊。</p>
           </div>
         </section>
 
-        <div className="article-shell">
-          {article.sections.map((section) => (
-            <section id={section.id} className="article-section" key={section.id} aria-labelledby={`${section.id}-title`}>
-              <SectionHeading section={section} />
-              <ArticleContent section={section} />
-            </section>
-          ))}
+        <div className="article-backdrop-region">
+          <div className="article-backdrop" aria-hidden="true">
+            <div className="article-backdrop__viewport">
+              <div className="article-backdrop__canvas">
+                <span className="article-backdrop__photo article-backdrop__photo--ward" />
+                <span className="article-backdrop__photo article-backdrop__photo--surgery" />
+                <span className="article-backdrop__photo article-backdrop__photo--corridor" />
+                <span className="article-backdrop__photo article-backdrop__photo--ct" />
+              </div>
+            </div>
+            <div className="article-backdrop__noise" />
+          </div>
+
+          <div className="article-shell">
+            {article.sections.map((section) => (
+              <section id={section.id} className="article-section" key={section.id} aria-labelledby={`${section.id}-title`}>
+                {storyScreensBySection[section.id].map((screen) => (
+                  <StoryScreen key={screen.id} screen={screen} section={section} />
+                ))}
+              </section>
+            ))}
+          </div>
         </div>
       </main>
 
