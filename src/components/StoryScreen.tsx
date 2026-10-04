@@ -8,6 +8,7 @@ export function StoryScreen({ screen, section }: { screen: StoryScreenData; sect
     "story-screen",
     "screen-transition",
     `story-screen--${screen.kind}`,
+    screen.layout ? `story-screen--${screen.layout}` : "",
     screen.chartIds.length > 1 ? "story-screen--multi-chart" : "",
   ].filter(Boolean).join(" ");
 

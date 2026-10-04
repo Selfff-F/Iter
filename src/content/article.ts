@@ -1,9 +1,9 @@
 import articleSource from "../../docs/article.md?raw";
 import contentSource from "../../docs/content.md?raw";
 
-export const chartIds = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11"] as const;
-export type ChartId = (typeof chartIds)[number];
-export type ChartLayout = "full" | "split";
+type Digit = "0" | "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9";
+export type ChartId = `${Digit}${Digit}`;
+export type ChartLayout = "full" | "split" | "pair";
 
 export interface ChartMetadata {
   title: string;
@@ -11,6 +11,10 @@ export interface ChartMetadata {
   source: string;
   unit: string;
   conclusion: string;
+}
+
+interface ChartCatalogEntry extends ChartMetadata {
+  layout: ChartLayout;
 }
 
 export type ArticleBlock =
@@ -33,6 +37,58 @@ const sectionIds: Record<string, string> = {
   陪诊赛道下半场: "industry",
   结尾: "conclusion",
 };
+
+function cleanField(value: string | undefined) {
+  return (value ?? "").replace(/^`|`$/g, "").trim();
+}
+
+function parseChartTitles(source: string) {
+  const titles: Record<string, string> = {};
+  for (const match of source.matchAll(/<!--图表(\d{2})：(.+?)-->/g)) {
+    titles[match[1]] = match[2].trim();
+  }
+  return titles;
+}
+
+function parseChartCatalog(source: string, titles: Record<string, string>) {
+  const charts: Record<string, ChartCatalogEntry> = {};
+
+  for (const rawLine of source.replace(/\r/g, "").split("\n")) {
+    const parts = rawLine.trim().split("｜").map((part) => part.trim());
+    const chartMatch = parts[0]?.match(/^图表\s*(\d{2})$/);
+    if (!chartMatch) continue;
+
+    const fields = Object.fromEntries(parts.slice(1).map((part) => {
+      const separator = part.indexOf("：");
+      return separator < 0
+        ? [part, ""]
+        : [part.slice(0, separator).trim(), part.slice(separator + 1).trim()];
+    }));
+    const chartId = chartMatch[1];
+    charts[chartId] = {
+      title: titles[chartId] ?? `图表 ${chartId}`,
+      dataFile: cleanField(fields["数据文件"]),
+      layout: fields["布局"] === "split" || fields["布局"] === "pair" ? fields["布局"] : "full",
+      source: cleanField(fields["来源"]),
+      unit: cleanField(fields["单位"]),
+      conclusion: cleanField(fields["结论"]),
+    };
+  }
+
+  return charts;
+}
+
+const chartTitles = parseChartTitles(articleSource);
+const chartCatalog = parseChartCatalog(contentSource, chartTitles);
+
+export const chartIds = Object.keys(chartCatalog)
+  .sort((first, second) => Number(first) - Number(second)) as ChartId[];
+
+const chartIdSet = new Set<string>(chartIds);
+
+function isChartId(value: string): value is ChartId {
+  return chartIdSet.has(value);
+}
 
 function flushParagraph(lines: string[], blocks: ArticleBlock[]) {
   const content = lines.join(" ").trim();
@@ -70,10 +126,10 @@ export function parseArticle(source: string): { title: string; sections: Article
       current.blocks.push({ type: "carousel", carouselId: "platforms" });
       continue;
     }
-    const chart = line.match(/^<!--图表((?:0[1-9]|1[01]))：.*-->$/);
+    const chart = line.match(/^<!--图表(\d{2})：.*-->$/);
     if (chart) {
       flushParagraph(paragraphLines, current.blocks);
-      current.blocks.push({ type: "chart", chartId: chart[1] as ChartId });
+      if (isChartId(chart[1])) current.blocks.push({ type: "chart", chartId: chart[1] });
       continue;
     }
     if (/^<!--.*-->$/.test(line)) {
@@ -93,66 +149,8 @@ export function parseArticle(source: string): { title: string; sections: Article
 
 export const article = parseArticle(articleSource);
 
-const chartTitles: Record<ChartId, string> = {
-  "01": "2016—2025年全国65岁及以上人口数量及占比",
-  "02": "2000—2020年中国老年家庭空巢化基本情况",
-  "03": "中国60周岁及以上老年人慢性病患病情况",
-  "04": "中国就医老年人年龄结构",
-  "05": "中国60周岁及以上老年人跨区就医情况",
-  "06": "我国60周岁及以上老年人智能手机使用情况",
-  "07": "陪诊服务的核心流程",
-  "08": "陪诊服务需求对象占比",
-  "09": "我国陪诊相关现存企业所属地区分布",
-  "10": "大厂入局行动线",
-  "11": "老年受访者对医院智慧终端的建议",
-};
-
-function isChartId(value: string): value is ChartId {
-  return (chartIds as readonly string[]).includes(value);
-}
-
-function cleanTableCell(value: string | undefined) {
-  return (value ?? "").replace(/^`|`$/g, "").trim();
-}
-
-function parseChartTable(source: string): Partial<Record<ChartId, ChartMetadata & { layout: ChartLayout }>> {
-  const lines = source.replace(/\r/g, "").split("\n");
-  const headerIndex = lines.findIndex((line) => line.includes("| 编号 ") && line.includes("| 布局 "));
-  if (headerIndex < 0) return {};
-
-  const headerCells = lines[headerIndex].split("|").map((cell) => cell.trim());
-  const chartIndex = headerCells.indexOf("编号");
-  const dataFileIndex = headerCells.indexOf("数据文件");
-  const layoutIndex = headerCells.indexOf("布局");
-  const sourceIndex = headerCells.indexOf("来源");
-  const unitIndex = headerCells.indexOf("单位");
-  const conclusionIndex = headerCells.indexOf("结论");
-  if ([chartIndex, dataFileIndex, layoutIndex, sourceIndex, unitIndex, conclusionIndex].some((index) => index < 0)) return {};
-
-  const charts: Partial<Record<ChartId, ChartMetadata & { layout: ChartLayout }>> = {};
-  for (const line of lines.slice(headerIndex + 2)) {
-    if (!line.trim().startsWith("|")) continue;
-    const cells = line.split("|").map((cell) => cell.trim());
-    const chartMatch = cells[chartIndex]?.match(/^图表\s*((?:0[1-9]|1[01]))$/);
-    const chartId = chartMatch?.[1];
-    if (!chartId || !isChartId(chartId)) continue;
-    charts[chartId] = {
-      title: chartTitles[chartId],
-      dataFile: cleanTableCell(cells[dataFileIndex]),
-      layout: cells[layoutIndex] === "split" ? "split" : "full",
-      source: cleanTableCell(cells[sourceIndex]),
-      unit: cleanTableCell(cells[unitIndex]),
-      conclusion: cleanTableCell(cells[conclusionIndex]),
-    };
-  }
-
-  return charts;
-}
-
-const chartTable = parseChartTable(contentSource);
-
 export const chartLayouts = Object.fromEntries(
-  chartIds.map((chartId) => [chartId, chartTable[chartId]?.layout ?? "full"]),
+  chartIds.map((chartId) => [chartId, chartCatalog[chartId].layout]),
 ) as Record<ChartId, ChartLayout>;
 
 export function getChartLayout(chartId: ChartId): ChartLayout {
@@ -160,11 +158,8 @@ export function getChartLayout(chartId: ChartId): ChartLayout {
 }
 
 export const chartMetadata = Object.fromEntries(
-  chartIds.map((chartId) => [chartId, chartTable[chartId] ?? {
-    title: chartTitles[chartId],
-    dataFile: "—",
-    source: "—",
-    unit: "—",
-    conclusion: "—",
-  }]),
+  chartIds.map((chartId) => {
+    const { layout: _layout, ...metadata } = chartCatalog[chartId];
+    return [chartId, metadata];
+  }),
 ) as Record<ChartId, ChartMetadata>;

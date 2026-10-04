@@ -4,10 +4,11 @@ import type { EChartsOption, EChartsType, ECElementEvent } from "echarts";
 import type {
   AgeStructureRow,
   CompanyDistributionRow,
-  ChronicDiseaseRow,
+  CompanyStockRow,
   CrossRegionMedicalRow,
   FlowRow,
   FriendlySuggestionRow,
+  ImplementedSecondaryChartId,
   ServiceUserRow,
   SiteData,
   SmartphoneRow,
@@ -18,7 +19,7 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import { ChartFrame } from "./ChartFrame";
 import { EChart } from "./EChart";
 
-export type ImplementedChartId = "03" | "04" | "05" | "06" | "07" | "08" | "09" | "10" | "11";
+export type ImplementedChartId = ImplementedSecondaryChartId;
 type ImplementedChartData = Pick<SiteData, ImplementedChartId>;
 
 function chartColors() {
@@ -42,25 +43,6 @@ function baseTooltip(color: ReturnType<typeof chartColors>) {
     backgroundColor: color.surface,
     borderColor: color.grid,
     textStyle: { color: color.primary },
-  };
-}
-
-function verticalBarOption(data: ChronicDiseaseRow[]): EChartsOption {
-  const color = chartColors();
-  return {
-    color: [color.primary],
-    tooltip: { ...baseTooltip(color), valueFormatter: (value) => `${value}%` },
-    grid: { top: 42, right: 24, bottom: 32, left: 30, containLabel: true },
-    xAxis: { type: "category", data: data.map((row) => row.disease), axisTick: { show: false }, axisLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
-    yAxis: { type: "value", name: "%", max: 70, nameTextStyle: { color: color.text }, splitLine: { lineStyle: { color: color.grid } }, axisLabel: { color: color.text } },
-    series: [{
-      name: "患病率",
-      type: "bar",
-      barMaxWidth: 72,
-      data: data.map((row) => row.rate),
-      label: { show: true, position: "top", color: color.primary, formatter: "{c}%" },
-      itemStyle: { borderRadius: [8, 8, 0, 0] },
-    }],
   };
 }
 
@@ -150,6 +132,42 @@ function horizontalBarOption(data: FriendlySuggestionRow[]): EChartsOption {
       data: data.map((row) => row.ratio),
       label: { show: true, position: "right", color: color.primary, formatter: "{c}%" },
       itemStyle: { borderRadius: [0, 8, 8, 0] },
+    }],
+  };
+}
+
+function companyStockOption(data: CompanyStockRow[]): EChartsOption {
+  const color = chartColors();
+  return {
+    color: [color.primary],
+    tooltip: {
+      trigger: "axis",
+      backgroundColor: color.surface,
+      borderColor: color.grid,
+      textStyle: { color: color.primary },
+      valueFormatter: (value) => `${value} 家`,
+    },
+    grid: { top: 28, right: 24, bottom: 34, left: 28, containLabel: true },
+    xAxis: {
+      type: "category",
+      data: data.map((row) => row.year),
+      axisTick: { show: false },
+      axisLine: { lineStyle: { color: color.grid } },
+      axisLabel: { color: color.text },
+    },
+    yAxis: {
+      type: "value",
+      name: "家",
+      nameTextStyle: { color: color.text },
+      splitLine: { lineStyle: { color: color.grid } },
+      axisLabel: { color: color.text },
+    },
+    series: [{
+      name: "企业存量",
+      type: "bar",
+      barMaxWidth: 42,
+      data: data.map((row) => row.count),
+      itemStyle: { borderRadius: [7, 7, 0, 0] },
     }],
   };
 }
@@ -332,26 +350,26 @@ function MobileTimeline({ data }: { data: TimelineRow[] }) {
 }
 
 function createOption(chartId: ImplementedChartId, data: ImplementedChartData, isMobile: boolean): EChartsOption | undefined {
-  if (chartId === "03") return verticalBarOption(data["03"]);
-  if (chartId === "04") return donutOption(data["04"], "ageGroup");
-  if (chartId === "05") return crossRegionOption(data["05"]);
-  if (chartId === "06") return smartphoneCompositeOption(data["06"]);
-  if (chartId === "08") return roseOption(data["08"]);
-  if (chartId === "09") return chinaMapOption(data["09"], isMobile);
-  if (chartId === "10") return timelineOption(data["10"]);
-  if (chartId === "11") return horizontalBarOption(data["11"]);
+  if (chartId === "03") return donutOption(data["03"], "ageGroup");
+  if (chartId === "04") return crossRegionOption(data["04"]);
+  if (chartId === "05") return smartphoneCompositeOption(data["05"]);
+  if (chartId === "07") return roseOption(data["07"]);
+  if (chartId === "09") return companyStockOption(data["09"]);
+  if (chartId === "10") return chinaMapOption(data["10"], isMobile);
+  if (chartId === "11") return timelineOption(data["11"]);
+  if (chartId === "13") return horizontalBarOption(data["13"]);
   return undefined;
 }
 
-const ariaLabels: Record<Exclude<ImplementedChartId, "07">, string> = {
-  "03": "中国60周岁及以上老年人慢性病患病率柱状图",
-  "04": "中国就医老年人年龄结构环形图",
-  "05": "中国60周岁及以上老年人跨区就医情况柱状图",
-  "06": "老年人智能手机使用情况子母环图",
-  "08": "陪诊服务需求对象占比环形图",
-  "09": "我国陪诊相关现存企业大区分布中国地图",
-  "10": "陪诊行业平台行动时间线",
-  "11": "老年受访者对医院智慧终端建议水平条形图",
+const ariaLabels: Record<Exclude<ImplementedChartId, "06">, string> = {
+  "03": "中国就医老年人年龄结构环形图",
+  "04": "中国60周岁及以上老年人跨区就医情况柱状图",
+  "05": "老年人智能手机使用情况子母环图",
+  "07": "陪诊服务需求对象占比环形图",
+  "09": "陪诊服务相关企业存量柱状图",
+  "10": "我国陪诊相关现存企业大区分布中国地图",
+  "11": "陪诊行业平台行动时间线",
+  "13": "老年受访者对医院智慧终端建议水平条形图",
 };
 
 export function SecondaryCharts({ chartId }: { chartId: ImplementedChartId }) {
@@ -370,7 +388,7 @@ export function SecondaryCharts({ chartId }: { chartId: ImplementedChartId }) {
   }, []);
 
   useEffect(() => {
-    if (chartId !== "09") return;
+    if (chartId !== "10") return;
     let mounted = true;
     loadChinaGeoJson()
       .then((geoJson) => {
@@ -382,16 +400,16 @@ export function SecondaryCharts({ chartId }: { chartId: ImplementedChartId }) {
   }, [chartId]);
 
   const option = useMemo(
-    () => data && (chartId !== "09" || mapReady) ? createOption(chartId, data, isMobile) : undefined,
+    () => data && (chartId !== "10" || mapReady) ? createOption(chartId, data, isMobile) : undefined,
     [chartId, data, isMobile, mapReady],
   );
 
   const bindChartInteractions = useCallback((chart: EChartsType) => {
-    if (chartId === "09") {
+    if (chartId === "10") {
       mapChartRef.current = chart;
       return () => { mapChartRef.current = null; };
     }
-    if (chartId !== "06") return undefined;
+    if (chartId !== "05") return undefined;
 
     const rightSeries = [1, 2, 3, 4];
     let locked = false;
@@ -475,25 +493,25 @@ export function SecondaryCharts({ chartId }: { chartId: ImplementedChartId }) {
 
   if (error) return <ChartFrame chartId={chartId}><p className="chart-message">{error}</p></ChartFrame>;
   if (!data) return <ChartFrame chartId={chartId}><p className="chart-message">正在加载数据…</p></ChartFrame>;
-  if (chartId === "09" && !mapReady) return <ChartFrame chartId={chartId}><p className="chart-message">正在加载地图…</p></ChartFrame>;
-  if (chartId === "07") return <ChartFrame chartId={chartId}><FlowDiagram data={data["07"]} /></ChartFrame>;
-  if (chartId === "10" && isMobile) return <ChartFrame chartId={chartId}><MobileTimeline data={data["10"]} /></ChartFrame>;
+  if (chartId === "10" && !mapReady) return <ChartFrame chartId={chartId}><p className="chart-message">正在加载地图…</p></ChartFrame>;
+  if (chartId === "06") return <ChartFrame chartId={chartId}><FlowDiagram data={data["06"]} /></ChartFrame>;
+  if (chartId === "11" && isMobile) return <ChartFrame chartId={chartId}><MobileTimeline data={data["11"]} /></ChartFrame>;
 
   const renderedChart = (
     <EChart
       option={option!}
-      ariaLabel={ariaLabels[chartId as Exclude<ImplementedChartId, "07">]}
-      onChartReady={chartId === "06" || chartId === "09" ? bindChartInteractions : undefined}
+      ariaLabel={ariaLabels[chartId as Exclude<ImplementedChartId, "06">]}
+      onChartReady={chartId === "05" || chartId === "10" ? bindChartInteractions : undefined}
     />
   );
 
   return (
     <ChartFrame chartId={chartId}>
-      {chartId === "09" ? (
+      {chartId === "10" ? (
         <div className="map-chart">
           {renderedChart}
           <ul className="map-chart__legend" aria-label="七大区企业分布占比">
-            {data["09"].map((row, index) => {
+            {data["10"].map((row, index) => {
               const regionName = row.region.replace(/地区$/, "");
               return (
                 <li key={row.region}>
@@ -514,7 +532,7 @@ export function SecondaryCharts({ chartId }: { chartId: ImplementedChartId }) {
             })}
           </ul>
         </div>
-      ) : chartId === "06" ? (
+      ) : chartId === "05" ? (
         <div className="smartphone-chart">
           {renderedChart}
           <button

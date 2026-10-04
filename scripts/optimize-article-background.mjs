@@ -10,6 +10,9 @@ const images = [
   { name: "surgery", resize: { width: 1400 } },
   { name: "corridor", resize: { height: 1200 } },
   { name: "ct", resize: { width: 1400 } },
+  { name: "stethoscope", resize: { width: 1200, height: 795 } },
+  { name: "medical-tools", resize: { width: 1200, height: 795 } },
+  { name: "wheelchair", resize: { width: 1200, height: 795 } },
 ];
 
 for (const image of images) {

@@ -10,10 +10,10 @@ import { useMediaQuery } from "../hooks/useMediaQuery";
 import { scheduleScrollTriggerRefresh } from "../utils/scheduleScrollTriggerRefresh";
 
 const placeholderPlatforms = [
-  { name: "平台 A", time: "时间待补", description: "平台服务与发展节点说明待补。" },
-  { name: "平台 B", time: "时间待补", description: "平台服务与发展节点说明待补。" },
-  { name: "平台 C", time: "时间待补", description: "平台服务与发展节点说明待补。" },
-  { name: "平台 D", time: "时间待补", description: "平台服务与发展节点说明待补。" },
+  { name: "小易陪伴", time: "2022年", description: "平台提供全国陪诊服务，帮取报告、取号、帮买药、帮问诊等，将“一次陪诊，终身托付”作为其品质追求", image: "/images/platforms/xiaoyi.jpg" },
+  { name: "陪诊呗", time: "2023年", description: "平台专注于提供医疗陪诊服务，截至2025年1月，已覆盖全国90%以上的城市，提供全天陪诊、代取报告等多样化服务，并通过严格的陪诊师培训机制保障服务质量", image: "/images/platforms/peizhenbei.jpg" },
+  { name: "橙医健康", time: "2022年", description: "橙医健康主要经营陪诊师、健康管理师等技能提升业务，以及提供陪诊、绿色就医等医疗健康服务", image: "/images/platforms/huwuyou.jpg" },
+  { name: "滴滴陪诊", time: "2026年" ,description: "滴滴陪诊是滴滴出行于2026年推出的就医陪护服务平台，用户可通过滴滴APP预约持证陪诊师，获得包括挂号、缴费、检查、取药、医患沟通协助及情感陪伴在内的全流程陪同服务", image: "/images/platforms/didi.jpg" },
 ];
 
 export function PlatformCarousel() {
@@ -124,16 +124,15 @@ export function PlatformCarousel() {
           1200: { slidesPerView: 3.15, spaceBetween: 24 },
         }}
       >
-        {placeholderPlatforms.map((platform, index) => (
+        {placeholderPlatforms.map((platform) => (
           <SwiperSlide key={platform.name}>
             <article className="platform-card">
-              <div className="platform-card__media" role="img" aria-label={`${platform.name}图片待补`}>
-                <span>图片待补</span>
-                <i className={`platform-card__shape platform-card__shape--${index % 2 === 0 ? "yellow" : "blue"}`} aria-hidden="true" />
+              <div className="platform-card__media">
+                <img src={platform.image} alt={`${platform.name}平台`} />
               </div>
               <div className="platform-card__body">
-                <span className="platform-card__time">{platform.time}</span>
                 <h3>{platform.name}</h3>
+                <span className="platform-card__time">{platform.time}</span>
                 <p>{platform.description}</p>
               </div>
             </article>

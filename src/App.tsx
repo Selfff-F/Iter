@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { EndMatterScreen } from "./components/EndMatterScreen";
 import { ReadingProgress } from "./components/ReadingProgress";
 import { SiteNav } from "./components/SiteNav";
 import { StoryScreen } from "./components/StoryScreen";
@@ -75,6 +76,9 @@ export default function App() {
                 <span className="article-backdrop__photo article-backdrop__photo--surgery" />
                 <span className="article-backdrop__photo article-backdrop__photo--corridor" />
                 <span className="article-backdrop__photo article-backdrop__photo--ct" />
+                <span className="article-backdrop__photo article-backdrop__photo--stethoscope" />
+                <span className="article-backdrop__photo article-backdrop__photo--medical-tools" />
+                <span className="article-backdrop__photo article-backdrop__photo--wheelchair" />
               </div>
             </div>
             <div className="article-backdrop__noise" />
@@ -88,6 +92,7 @@ export default function App() {
                 ))}
               </section>
             ))}
+            <EndMatterScreen />
           </div>
         </div>
       </main>
